@@ -7,6 +7,7 @@ class VT220:
     ser = None  # raw serial connection, reference kept for cleanup
     sio = None  # buffered serial connection, this is internally used
     line_buffer = b''  # bytes string containing the current line up to (and containing) the newline char
+    echo_characters = True  # when the user hits a key, should it display on the screen?
 
     def __init__(self, serial_port, baud_rate=9600, byte_size=serial.EIGHTBITS, stop_bits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE):
         if not serial_port:
@@ -55,6 +56,8 @@ class VT220:
 
         if on_char:
             on_char(char)
+        if self.echo_characters and char:
+            self.write(char)
         return char
 
     def read_line(self, block=False, on_char=None, on_line=None):
